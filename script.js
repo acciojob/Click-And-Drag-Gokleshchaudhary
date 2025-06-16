@@ -1,35 +1,35 @@
-// Your code here.
-const cubes = document.querySelectorAll('.cube');
-const container = document.querySelector('.container');
+const items = document.querySelectorAll('.item');
 
-cubes.forEach(cube => {
-    cube.addEventListener('mousedown', (e) => {
-        const offsetX = e.clientX - cube.getBoundingClientRect().left;
-        const offsetY = e.clientY - cube.getBoundingClientRect().top;
-
-        const onMouseMove = (e) => {
-            let newX = e.clientX - offsetX;
-            let newY = e.clientY - offsetY;
-
-            // Boundary conditions
-            const containerRect = container.getBoundingClientRect();
-            const cubeRect = cube.getBoundingClientRect();
-
-            if (newX < containerRect.left) newX = containerRect.left;
-            if (newX + cubeRect.width > containerRect.right) newX = containerRect.right - cubeRect.width;
-            if (newY < containerRect.top) newY = containerRect.top;
-            if (newY + cubeRect.height > containerRect.bottom) newY = containerRect.bottom - cubeRect.height;
-
-            cube.style.left = newX - containerRect.left + 'px';
-            cube.style.top = newY - containerRect.top + 'px';
-        };
-
-        const onMouseUp = () => {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-    });
+items.forEach(item => {
+    item.addEventListener('dragstart', dragStart);
+    item.addEventListener('dragend', dragEnd);
 });
+
+function dragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.innerText);
+    setTimeout(() => {
+        e.target.classList.add('hide');
+    }, 0);
+}
+
+function dragEnd(e) {
+    e.target.classList.remove('hide');
+}
+
+const container = document.querySelector('.items');
+
+container.addEventListener('dragover', dragOver);
+container.addEventListener('drop', drop);
+
+function dragOver(e) {
+    e.preventDefault(); // Prevent default to allow drop
+}
+
+function drop(e) {
+    e.preventDefault();
+    const draggedItemText = e.dataTransfer.getData('text/plain');
+    const draggedItem = Array.from(items).find(item => item.innerText === draggedItemText);
+    
+    // Append the dragged item to the drop location
+    container.appendChild(draggedItem);
+}
