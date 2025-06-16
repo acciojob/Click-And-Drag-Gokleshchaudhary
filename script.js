@@ -1,35 +1,22 @@
-const items = document.querySelectorAll('.item');
+describe('Drag and Drop Functionality', () => {
+    beforeEach(() => {
+        cy.visit('/'); // Adjust the URL as necessary
+    });
 
-items.forEach(item => {
-    item.addEventListener('dragstart', dragStart);
-    item.addEventListener('dragend', dragEnd);
+    it('drag & drop works correctly', { defaultCommandTimeout: 10000 }, () => { // Set default timeout for this test
+        // Wait for the items to be present
+        cy.get('.item', { timeout: 10000 }).should('have.length.greaterThan', 0); // Wait for items to load
+
+        // Start dragging the first item
+        cy.get('.item').first().trigger('dragstart');
+
+        // Simulate dragging over the drop area
+        cy.get('.items').trigger('dragover');
+
+        // Drop the item
+        cy.get('.item').last().trigger('drop');
+
+        // Check if the first item is now in the last position
+        cy.get('.items').children().last().should('have.text', 'Task 1');
+    });
 });
-
-function dragStart(e) {
-    e.dataTransfer.setData('text/plain', e.target.innerText);
-    setTimeout(() => {
-        e.target.classList.add('hide');
-    }, 0);
-}
-
-function dragEnd(e) {
-    e.target.classList.remove('hide');
-}
-
-const container = document.querySelector('.items');
-
-container.addEventListener('dragover', dragOver);
-container.addEventListener('drop', drop);
-
-function dragOver(e) {
-    e.preventDefault(); // Prevent default to allow drop
-}
-
-function drop(e) {
-    e.preventDefault();
-    const draggedItemText = e.dataTransfer.getData('text/plain');
-    const draggedItem = Array.from(items).find(item => item.innerText === draggedItemText);
-    
-    // Append the dragged item to the drop location
-    container.appendChild(draggedItem);
-}
