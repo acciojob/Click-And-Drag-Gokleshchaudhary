@@ -34,11 +34,15 @@ describe('example to-do app', () => {
         cy.get('.items', { timeout: 10000 }).should('exist');
 
         // Perform drag-and-drop actions
-        cy.get('.items .item').first().trigger('dragstart');
-        cy.get('.items .item').last().trigger('drop');
+        const firstItem = cy.get('.items .item').first();
+        const lastItem = cy.get('.items .item').last();
+
+        firstItem.trigger('dragstart');
+        lastItem.trigger('dragover'); // Trigger dragover before drop
+        lastItem.trigger('drop');
 
         // Add assertions to verify the drag-and-drop worked
-        // For example, check if the first item is now the last in the list
-        cy.get('.items .item').eq(0).should('have.text', 'Item 2'); // Adjust based on your items
+        // Check if the first item is now the last in the list
+        cy.get('.items .item').last().should('have.text', firstItem.text()); // Check if the last item is the one dragged
     });
 });
