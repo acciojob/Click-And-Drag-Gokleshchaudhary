@@ -1,36 +1,44 @@
-const cubes = document.querySelectorAll('.cube');
-const container = document.querySelector('.container');
+const items = document.querySelectorAll('.item');
 
-cubes.forEach(cube => {
-    cube.addEventListener('mousedown', function(e) {
-        let shiftX = e.clientX - cube.getBoundingClientRect().left;
-        let shiftY = e.clientY - cube.getBoundingClientRect().top;
-
-        function moveAt(pageX, pageY) {
-            let newLeft = pageX - shiftX - container.getBoundingClientRect().left;
-            let newTop = pageY - shiftY - container.getBoundingClientRect().top;
-
-            // Boundary conditions
-            newLeft = Math.max(0, Math.min(container.clientWidth - cube.offsetWidth, newLeft));
-            newTop = Math.max(0, Math.min(container.clientHeight - cube.offsetHeight, newTop));
-
-            cube.style.left = newLeft + 'px';
-            cube.style.top = newTop + 'px';
-        }
-
-        function onMouseMove(e) {
-            moveAt(e.pageX, e.pageY);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-
-        cube.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-            cube.onmouseup = null; // Clean up
-        };
+items.forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', e.target.innerText);
+        e.target.classList.add('dragging');
     });
 
-    cube.ondragstart = function() {
-        return false; // Prevent default drag behavior
-    };
+    item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+    });
+});
+
+const itemsContainer = document.querySelector('.items');
+
+itemsContainer.addEventListener('dragover', (e) => {
+    e.preventDefault(); // Prevent default to allow drop
+});
+
+itemsContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('text/plain');
+    const draggedItem = Array.from(items).find(item => item.innerText === data);
+    itemsContainer.appendChild(draggedItem); // Move the dragged item to the new location
+});
+describe('example to-do app', () => {
+    beforeEach(() => {
+        // Visit your app's page
+        cy.visit('http://localhost:3000'); // Adjust the URL as necessary
+    });
+
+    it('drag & drop works correctly', () => {
+        // Wait for the items to appear
+        cy.get('.items', { timeout: 10000 }).should('exist');
+
+        // Perform drag-and-drop actions
+        cy.get('.items .item').first().trigger('dragstart');
+        cy.get('.items .item').last().trigger('drop');
+
+        // Add assertions to verify the drag-and-drop worked
+        // For example, check if the first item is now the last in the list
+        cy.get('.items .item').eq(0).should('have.text', 'Item 2'); // Adjust based on your items
+    });
 });
