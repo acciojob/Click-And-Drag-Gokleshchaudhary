@@ -95,6 +95,11 @@
         selectedCube = null;
       }
     }
+	  // Example fix in Cypress test:
+cy.get('.cube').first().trigger('mousedown', { which: 1 });
+cy.get('.cube').first().trigger('mousemove', { clientX: 300, clientY: 100 });
+cy.get('.cube').first().trigger('mouseup');
+
   </script>
 </body>
 </html>
