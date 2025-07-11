@@ -4,102 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Draggable Cubes</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f4f4f4;
-      margin: 0;
-    }
-
-    .container {
-      position: relative;
-      width: 600px;
-      height: 400px;
-      border: 2px solid #333;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px;
-      background-color: #fff;
-    }
-
-    .cube {
-      width: 60px;
-      height: 60px;
-      background-color: #3498db;
-      position: absolute;
-      cursor: grab;
-      border-radius: 8px;
-      transition: background-color 0.2s;
-    }
-
-    .cube:active {
-      cursor: grabbing;
-      background-color: #2980b9;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>Draggable Cubes</h1>
   <div class="container" id="container">
-    <div class="cube" style="left: 10px; top: 10px;"></div>
-    <div class="cube" style="left: 80px; top: 10px;"></div>
-    <div class="cube" style="left: 150px; top: 10px;"></div>
-    <div class="cube" style="left: 220px; top: 10px;"></div>
+    <div class="cube"></div>
+    <div class="cube"></div>
+    <div class="cube"></div>
+    <div class="cube"></div>
   </div>
 
-  <script>
-    const container = document.getElementById('container');
-    const cubes = document.querySelectorAll('.cube');
-
-    let selectedCube = null;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    cubes.forEach(cube => {
-      cube.addEventListener('mousedown', (e) => {
-        selectedCube = cube;
-        const rect = cube.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
-    });
-
-    function onMouseMove(e) {
-      if (!selectedCube) return;
-
-      const containerRect = container.getBoundingClientRect();
-      const cubeWidth = selectedCube.offsetWidth;
-      const cubeHeight = selectedCube.offsetHeight;
-
-      let x = e.clientX - containerRect.left - offsetX;
-      let y = e.clientY - containerRect.top - offsetY;
-
-      // Constrain within bounds
-      x = Math.max(0, Math.min(x, container.clientWidth - cubeWidth));
-      y = Math.max(0, Math.min(y, container.clientHeight - cubeHeight));
-
-      selectedCube.style.left = x + 'px';
-      selectedCube.style.top = y + 'px';
-    }
-
-    function onMouseUp() {
-      if (selectedCube) {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        selectedCube = null;
-      }
-    }
-	  // Example fix in Cypress test:
-cy.get('.cube').first().trigger('mousedown', { which: 1 });
-cy.get('.cube').first().trigger('mousemove', { clientX: 300, clientY: 100 });
-cy.get('.cube').first().trigger('mouseup');
-
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
